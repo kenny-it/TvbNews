@@ -5,7 +5,6 @@ import HomeScreen from './HomeScreen';
 import CatchScreen from './CatchScreen';
 import FeatureScreen from './FeatureScreen';
 import LiveScreen from './LiveScreen';
-import {Text, View} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();

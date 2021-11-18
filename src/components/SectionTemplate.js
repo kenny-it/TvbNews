@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,64 +6,63 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
+  ToastAndroid,
 } from 'react-native';
+
+import EmptyComponent from './EmptyComponent';
 
 const APIURI =
   'http://api.news.tvb.com/news/v2.1.1/entry?profile=app&category=';
 
-class HomeTemplate extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      data: [],
-    };
-    this.getDataFromNet = this.getDataFromNet.bind(this);
-  }
+const SectionTemplate = ({id, navigation, navigateTitle}) => {
+  const [data, setData] = useState([]);
+  const [refreshFlag, setRefreshFlag] = useState(false);
 
-  componentDidMount() {
-    if (this.state.data.length > 0) return;
-    this.getDataFromNet(this.props.id);
-  }
+  useEffect(() => {
+    refreshingFunc();
+  }, [refreshFlag]);
 
-  async getDataFromNet(id) {
+  const refreshingFunc = async () => {
     try {
       const res = await fetch(APIURI + id + '&stamp=0');
       const data = await res.json();
-      this.setState({
-        data: data.items,
-      });
+      setData(data.items);
     } catch (error) {
-      console.error(error);
+      ToastAndroid.show("Couldn't get data from network!");
     }
-  }
+    setRefreshFlag(false);
+  };
 
-  render() {
-    const {data} = this.state;
-    const {navigation} = this.props;
-    return data && data.length > 0 ? (
-      <FlatList
-        data={data}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <ListScreen item={item} navigation={navigation} />
-        )}
-      />
-    ) : null;
-  }
-}
+  return data && data.length > 0 ? (
+    <FlatList
+      data={data}
+      keyExtractor={item => item.id}
+      refreshing={refreshFlag}
+      onRefresh={() => {
+        setRefreshFlag(true);
+      }}
+      renderItem={({item}) => (
+        <ListScreen item={item} navigation={navigation} title={navigateTitle} />
+      )}
+    />
+  ) : (
+    <EmptyComponent />
+  );
+};
 
-const ListScreen = ({navigation, item}) => {
+const ListScreen = ({navigation, item, title}) => {
   return (
     <TouchableHighlight
       activeOpacity={0.6}
       underlayColor="#DDD"
-      onPress={() => navigation.navigate('NewsDetail', item)}>
+      delayLongPress={200}
+      onLongPress={() => navigation.navigate('NewsDetail', {item, title})}>
       <View style={styles.container}>
         <View style={styles.imgWrapper}>
           <Image
             style={styles.image}
             source={{
-              uri: item.image[item.image.length - 1].thumbnail.url,
+              uri: item.image[item.image.length - 1].big.url,
             }}
           />
         </View>
@@ -103,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeTemplate;
+export default SectionTemplate;

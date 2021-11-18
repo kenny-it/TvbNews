@@ -19,7 +19,7 @@ const ITEMS = [
     id: 'local',
     title: '港澳',
     status: 'ready',
-    sequence: 300,
+    sequence: '300',
     createDate: '2017-04-27 15:33:55',
     modifyDate: '2017-04-27 15:45:56',
   },
