@@ -28,7 +28,7 @@ const SectionTemplate = ({id, navigation, navigateTitle}) => {
       const data = await res.json();
       setData(data.items);
     } catch (error) {
-      ToastAndroid.show("Couldn't get data from network!");
+      ToastAndroid.show("Couldn't get data from network!", ToastAndroid.SHORT);
     }
     setRefreshFlag(false);
   };
